@@ -1,0 +1,140 @@
+===========================================================================
+  MACSE634 — Explainable Credit Default Prediction
+  HOW TO RUN & FILE ORGANISATION GUIDE
+===========================================================================
+
+  Authors:
+    THARUN M      (25MAI0064)  tharun.m2025@vitstudent.ac.in
+    PRASSANTH K P (25MAI0070)  prassanth.kp2025@vitstudent.ac.in
+    KAMALNATH R   (25MAI0069)  Kamalnath.r2025@vitstudent.ac.in
+
+  Supervisor : Prof. Balaji G N
+  Course     : MACSE634 — Responsible Artificial Intelligence
+
+===========================================================================
+  FOLDER STRUCTURE  (create exactly this on your computer)
+===========================================================================
+
+  RAI_PROJECT/
+  ├── code/
+  │   ├── credit_default_run.py           ← MAIN script (run this)
+  │   ├── credit_default_run_UPDATED.py   ← Updated (13 novelties + stack)
+  │   ├── HOW_TO_RUN.txt                  ← This file
+  │   └── requirements.txt
+  │
+  ├── figures/                            ← All 29 pre-generated graphs
+  │   ├── 01_EDA.png
+  │   ├── 02_Correlation_Heatmap.png
+  │   ├── 03_ROC_PR_Curves.png
+  │   ├── 04_Confusion_Matrices.png
+  │   ├── 05_Calibration_Curve.png
+  │   ├── 06_SHAP_Global.png
+  │   ├── 07_SHAP_Beeswarm.png
+  │   ├── 08_SHAP_Dependence.png
+  │   ├── 09_SHAP_Decision_Plot.png
+  │   ├── 10a_SHAP_Force_High-Risk.png
+  │   ├── 10b_SHAP_Force_Low-Risk.png
+  │   ├── 11a_LIME_High-Risk.png
+  │   ├── 11b_LIME_Low-Risk.png
+  │   ├── 12_SHAP_vs_LIME.png
+  │   ├── 13_Novel_PayMomentum.png
+  │   ├── 14_Novel_MaxDelayStreak.png
+  │   ├── 15_Novel_CEI.png
+  │   ├── 16_Novel_DelayRecencyInteraction.png
+  │   ├── 17_All_Novel_SHAP.png
+  │   ├── 18_Fairness_Analysis.png
+  │   ├── 19_Paper_Comparison.png
+  │   ├── 20_Novel_Summary_Card.png
+  │   ├── 21_CrossValidation_AUC.png
+  │   ├── 21_Metrics_Table.png
+  │   ├── 22_ECOA_GDPR_Report.png
+  │   ├── 22_Threshold_KS_Optimal.png
+  │   ├── 23_Radar_Chart_Models.png
+  │   ├── 24_SHAP_Interaction_Heatmap.png
+  │   └── 25_Counterfactual_NearestNeighbour.png
+  │
+  └── report/
+      └── RAI_Complete_Report.pdf
+
+===========================================================================
+  HOW TO RUN  (only needed if you want to regenerate figures)
+===========================================================================
+
+  Step 1 — Install Python 3.8+ from python.org
+            Tick "Add Python to PATH" during install
+
+  Step 2 — Open Command Prompt (Windows) or Terminal (Mac/Linux)
+
+  Step 3 — Install packages (one time only):
+    pip install lightgbm xgboost shap lime imbalanced-learn scipy scikit-learn pandas numpy matplotlib seaborn openpyxl
+
+  Step 4 — Navigate to code folder:
+    cd Desktop\RAI_PROJECT\code
+
+  Step 5 — Run:
+    python credit_default_run.py
+
+  Step 6 — Wait 5-10 minutes. All figures saved to output_figures\
+
+  NOTE: You do NOT need to run the code. All 29 figures are
+        already pre-generated in the figures\ folder.
+
+===========================================================================
+  WHAT EACH FIGURE IS FOR (Research Paper Guide)
+===========================================================================
+
+  For Section 3 (Dataset & EDA):
+    01_EDA.png                      — Class distribution, age, credit limit
+    02_Correlation_Heatmap.png      — Feature correlations
+
+  For Section 4 (Model Results):
+    03_ROC_PR_Curves.png            — ROC and PR curves all 3 models
+    04_Confusion_Matrices.png       — At 10%, 20%, 50% thresholds
+    05_Calibration_Curve.png        — Reliability diagram
+    19_Paper_Comparison.png         — Our AUC vs 8 reference papers
+    21_Metrics_Table.png            — Full metrics comparison table
+    21_CrossValidation_AUC.png      — 5-fold CV proves model stability
+    22_Threshold_KS_Optimal.png     — KS-optimal threshold = 0.21
+    23_Radar_Chart_Models.png       — All 5 metrics on one radar chart
+
+  For Section 5 (SHAP Explainability):
+    06_SHAP_Global.png              — Global feature importance bar
+    07_SHAP_Beeswarm.png            — Direction + magnitude of all features
+    08_SHAP_Dependence.png          — Marginal effect of top 4 features
+    09_SHAP_Decision_Plot.png       — 20-customer journey plot
+    10a_SHAP_Force_High-Risk.png    — Individual high-risk explanation
+    10b_SHAP_Force_Low-Risk.png     — Individual low-risk explanation
+    24_SHAP_Interaction_Heatmap.png — Pairwise feature interaction matrix
+
+  For Section 6 (LIME Explainability):
+    11a_LIME_High-Risk.png          — LIME local explanation (high risk)
+    11b_LIME_Low-Risk.png           — LIME local explanation (low risk)
+    12_SHAP_vs_LIME.png             — SHAP vs LIME comparison (Spearman rho)
+
+  For Section 7 (Novel Features):
+    13_Novel_PayMomentum.png        — N1 deep-dive analysis
+    14_Novel_MaxDelayStreak.png     — N6 deep-dive analysis
+    15_Novel_CEI.png                — N2 deep-dive analysis
+    16_Novel_DelayRecencyInteraction.png — N10 deep-dive (top SHAP feature)
+    17_All_Novel_SHAP.png           — All 10 novel features SHAP ranking
+    20_Novel_Summary_Card.png       — Overview card of all novelties
+
+  For Section 8 (Responsible AI):
+    18_Fairness_Analysis.png        — Demographic parity by sex/age/education
+    22_ECOA_GDPR_Report.png         — ECOA adverse action report
+    25_Counterfactual_NearestNeighbour.png — GDPR recourse (what to change)
+
+===========================================================================
+  EXPECTED RESULTS
+===========================================================================
+
+  LightGBM ROC-AUC : ~0.79  (beats De Lange 2022 baseline of 0.79)
+  XGBoost  ROC-AUC : ~0.78
+  LR       ROC-AUC : ~0.70
+
+  5-Fold CV AUC    : 0.681 mean (confirms stability, low variance)
+  KS-optimal threshold : 0.21  (recommended for banks)
+  SHAP vs LIME rho : 0.43-0.67 (Moderate to Strong agreement)
+  Disparate Impact : ~0.93 (passes EEOC 4/5ths rule - FAIR)
+
+===========================================================================

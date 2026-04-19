@@ -1,0 +1,37 @@
+{
+  "lr_auc": 0.6856,
+  "lgbm_auc": 0.688,
+  "xgb_auc": 0.6828,
+  "lr_pr_auc": 0.2516,
+  "lgbm_pr_auc": 0.2481,
+  "shap_lime_rho": 0.2686,
+  "shap_lime_pval": 0.0894,
+  "lime_hr_r2": 0.3247,
+  "lime_lr_r2": 0.3843,
+  "disparate_impact": 1.1853,
+  "top10_shap": {
+    "TotalDelayScore": 0.81236,
+    "Sex": 0.31752,
+    "RPE": 0.17533,
+    "MaxDelayStreak": 0.15477,
+    "Marriage": 0.13011,
+    "BCS": 0.04853,
+    "PayStatus_May": 0.03108,
+    "Education": 0.02859,
+    "DelayRecencyInteraction": 0.02284,
+    "PayRatio_Sep": 0.02117
+  },
+  "novel_ranks": {
+    "PayMomentum": 34,
+    "CEI": 40,
+    "RSI": 41,
+    "BCS": 6,
+    "BPA": 16,
+    "MaxDelayStreak": 4,
+    "CLSS": 39,
+    "RPE": 3,
+    "DSR": 35,
+    "DelayRecencyInteraction": 9
+  },
+  "lgbm_best_iter": 39
+}

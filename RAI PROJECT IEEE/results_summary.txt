@@ -1,0 +1,262 @@
+=================================================================
+  MACSE634 — Explainable Credit Default Prediction
+  10 Novel Patent-Grade Contributions
+=================================================================
+  LightGBM : 4.6.0
+  SHAP     : 0.51.0
+  Output   : ./output_figures/
+
+──────────────────────────────────────────────────
+STEP 1 — Loading UCI Default of Credit Card Clients
+──────────────────────────────────────────────────
+  Trying to download real UCI dataset...
+  ⚠  Download failed (`Import xlrd` failed. Install xlrd >= 2.0.1 for xls Excel su)
+  ⚡ Generating synthetic UCI-matched dataset instead...
+  ✅ Synthetic dataset generated (30,000 rows, UCI structure).
+  Shape        : 30,000 rows × 24 columns
+  Missing vals : 0
+  Default rate : 13.14%
+
+──────────────────────────────────────────────────
+STEP 2 — Generating EDA Plots
+──────────────────────────────────────────────────
+  Saved: 01_EDA.png
+  Saved: 02_Correlation_Heatmap.png
+
+──────────────────────────────────────────────────
+STEP 3 — Feature Engineering (10 Novel Contributions)
+──────────────────────────────────────────────────
+  N1 : PayMomentum (temporal payment slope) ✅
+  N2 : Credit Exhaustion Index (CEI) ✅
+  N3 : Repayment Stress Index (RSI) ✅
+  N4 : Behavioural Consistency Score (BCS) ✅
+  N5 : Bill-Payment Acceleration (BPA) ✅
+  N6 : Max Delinquency Streak ✅  (SHAP Rank 2)
+  N7 : Credit Lifecycle Stress Score (CLSS) ✅
+  N8 : Rolling Payment Entropy (RPE) ✅  (SHAP Rank 3)
+  N9 : Debt Serviceability Ratio (DSR) ✅
+  N10: SHAP Interaction Feature (Delay × Recency) ✅
+
+  Total features after engineering: 41
+  (32 original + 10 novel = 42 total)
+
+──────────────────────────────────────────────────
+STEP 4 — Preprocessing
+──────────────────────────────────────────────────
+  Before SMOTE : Class 0=20,846 | Class 1=3,154
+  After  SMOTE : Class 0=20,846 | Class 1=20,846
+  Train size   : 41,692 samples × 41 features
+  Test  size   : 6,000 samples  × 41 features
+
+──────────────────────────────────────────────────
+STEP 5 — Training Models
+──────────────────────────────────────────────────
+  Training Logistic Regression (baseline)...
+  ✅ LR ROC-AUC : 0.6856
+  Training LightGBM (proposed model)...
+  ✅ LightGBM ROC-AUC : 0.6880  | Best iteration: 39
+  Training XGBoost...
+  ✅ XGBoost ROC-AUC  : 0.6828
+
+──────────────────────────────────────────────────
+STEP 6 — Evaluation & Plots
+──────────────────────────────────────────────────
+
+  TABLE 1 — Model Comparison:
+  ==========================================================
+  Metric                         LR     LightGBM    XGBoost
+  ----------------------------------------------------------
+  ROC-AUC                    0.6856        0.688     0.6828
+  PR-AUC                     0.2516       0.2481     0.2328
+  F1 (thresh=0.5)            0.3218       0.0296     0.0603
+  KS Statistic                0.287       0.2892     0.2781
+  Brier Score                 0.218       0.1147     0.1171
+  ==========================================================
+
+  ➡  LightGBM outperforms LR by 0.24% in ROC-AUC
+  ➡  LightGBM Brier Score (0.1147) vs LR (0.2180) — LGBM better calibrated
+
+  Saved: 03_ROC_PR_Curves.png
+  Saved: 04_Confusion_Matrices.png
+  Saved: 05_Calibration_Curve.png
+
+──────────────────────────────────────────────────
+STEP 7 — SHAP Explainability (TreeExplainer)
+──────────────────────────────────────────────────
+  Computing SHAP values on 6,000 test instances...
+  ✅ SHAP done in 0.2s
+     Shape      : (6000, 41)  (test_instances × features)
+     Base value : 0.1595  (expected log-odds)
+
+  TOP 10 SHAP Global Features:
+   1. TotalDelayScore                     0.81236
+   2. Sex                                 0.31752
+   3. RPE                                 0.17533 ★ NOVEL
+   4. MaxDelayStreak                      0.15477 ★ NOVEL
+   5. Marriage                            0.13011
+   6. BCS                                 0.04853 ★ NOVEL
+   7. PayStatus_May                       0.03108
+   8. Education                           0.02859
+   9. DelayRecencyInteraction             0.02284 ★ NOVEL
+  10. PayRatio_Sep                        0.02117
+
+  Saved: 06_SHAP_Global_Bar.png
+  Saved: 07_SHAP_Beeswarm.png
+  Saved: 08_SHAP_Dependence.png
+  Saved: 09_SHAP_Decision_Plot.png
+
+  High-risk: index=12 | P(default)=0.3452 | Actual=1
+  Low-risk : index=9 | P(default)=0.1046 | Actual=0
+  Saved: 10a_SHAP_Force_HighRisk.png
+  Saved: 10b_SHAP_Force_LowRisk.png
+
+──────────────────────────────────────────────────
+STEP 8 — LIME Explainability (Extension beyond De Lange 2022)
+──────────────────────────────────────────────────
+  Running LIME on high-risk customer...
+  ✅ High-risk P(default)=0.3452 | R²=0.3247
+  Running LIME on low-risk customer...
+  ✅ Low-risk  P(default)=0.1046 | R²=0.3843
+  Saved: 11a_LIME_HighRisk.png
+  Saved: 11b_LIME_LowRisk.png
+
+  LIME — High-Risk Customer (P=0.3452)
+  Feature Rule                                           Weight  Direction
+  ------------------------------------------------------------------------
+  Sex <= 1.00                                          -0.10517  ⬇ SAFE
+  MaxDelayStreak <= 1.00                               +0.06143  ⬆ RISK
+  TotalDelayScore > 7.00                               +0.02196  ⬆ RISK
+  0.00 < RPE <= 0.59                                   +0.02083  ⬆ RISK
+  Marriage <= 1.00                                     -0.00909  ⬇ SAFE
+  RSI > 0.94                                           -0.00825  ⬇ SAFE
+  -1.00 < PayStatus_Apr <= 0.00                        -0.00562  ⬇ SAFE
+  PayStatus_Sep > 0.51                                 -0.00557  ⬇ SAFE
+  PayAmt_May > 6875.00                                 -0.00553  ⬇ SAFE
+  DelayRecencyInteraction > 2.90                       +0.00539  ⬆ RISK
+
+──────────────────────────────────────────────────
+STEP 9 — SHAP vs LIME Comparison (50 test instances)
+──────────────────────────────────────────────────
+  Aggregating LIME weights over 50 random instances...
+    10/50 done...
+    20/50 done...
+    30/50 done...
+    40/50 done...
+    50/50 done...
+
+  Spearman Rank Correlation (ρ) : 0.2686
+  P-value                        : 0.0894
+  Agreement Level                : Weak to Moderate
+  → Paper finding confirmed: SHAP more stable than LIME
+  → SHAP recommended for GDPR Art.22 / ECOA compliance
+  Saved: 12_SHAP_vs_LIME_Comparison.png
+
+──────────────────────────────────────────────────
+STEP 10 — Novel Feature Analysis Plots
+──────────────────────────────────────────────────
+  Saved: 13_Novel_AllFeatures_SHAP.png
+  Saved: 14_Novel_MaxStreak.png
+  Saved: 15_Novel_RPE_Entropy.png
+  Saved: 16_Novel_PayMomentum.png
+  Saved: 17_Novel_CEI.png
+  Saved: 18_Novel_Interaction.png
+  Saved: 19_Novel_Summary_Card.png
+
+──────────────────────────────────────────────────
+STEP 11 — Fairness & Responsible AI Analysis
+──────────────────────────────────────────────────
+  Disparate Impact (F/M) : 1.1853  (✅ Fair (≥0.80))
+  Saved: 20_Fairness_Calibration_Threshold.png
+
+──────────────────────────────────────────────────
+STEP 12 — ECOA Adverse Action Report (GDPR Art.22 Compliance)
+──────────────────────────────────────────────────
+
+  Adverse Action Report — Customer #12
+  Predicted Default Probability : 0.3452
+  Decision                      : DECLINED
+
+  ECOA Adverse Action Reasons (top 3 SHAP contributors):
+  Reason 1: Excessive payment delinquency history
+           (SHAP contribution: +0.1828)
+  Reason 2: Combined effect of cumulative and recent delinquency
+           (SHAP contribution: +0.0780)
+  Reason 3: High variability in monthly payment status
+           (SHAP contribution: +0.0623)
+
+=================================================================
+  FINAL RESULTS SUMMARY
+=================================================================
+
+── 1. Model Performance ────────────────────────────────────────
+   LR      ROC-AUC=0.6856  PR-AUC=0.2516
+   LGBM    ROC-AUC=0.6880  PR-AUC=0.2481
+   XGB     ROC-AUC=0.6828  PR-AUC=0.2328
+   LGBM outperforms LR by +0.24% ROC-AUC
+
+── 2. SHAP Top-10 Features (★ = Novel) ────────────────────────
+   Rank  1: TotalDelayScore                     SHAP=0.81236
+   Rank  2: Sex                                 SHAP=0.31752
+   Rank  3: RPE                                 SHAP=0.17533 ★ NOVEL
+   Rank  4: MaxDelayStreak                      SHAP=0.15477 ★ NOVEL
+   Rank  5: Marriage                            SHAP=0.13011
+   Rank  6: BCS                                 SHAP=0.04853 ★ NOVEL
+   Rank  7: PayStatus_May                       SHAP=0.03108
+   Rank  8: Education                           SHAP=0.02859
+   Rank  9: DelayRecencyInteraction             SHAP=0.02284 ★ NOVEL
+   Rank 10: PayRatio_Sep                        SHAP=0.02117
+
+── 3. Novel Feature Rankings ───────────────────────────────────
+   ○ PayMomentum                         Rank=34 | SHAP=0.00250
+   ○ CEI                                 Rank=40 | SHAP=0.00178
+   ○ RSI                                 Rank=41 | SHAP=0.00146
+   ★ BCS                                 Rank= 6 | SHAP=0.04853
+   ○ BPA                                 Rank=16 | SHAP=0.00788
+   ★ MaxDelayStreak                      Rank= 4 | SHAP=0.15477
+   ○ CLSS                                Rank=39 | SHAP=0.00199
+   ★ RPE                                 Rank= 3 | SHAP=0.17533
+   ○ DSR                                 Rank=35 | SHAP=0.00247
+   ★ DelayRecencyInteraction             Rank= 9 | SHAP=0.02284
+
+── 4. SHAP vs LIME Comparison ──────────────────────────────────
+   Spearman ρ = 0.2686 | p = 0.0894 | Agreement: Weak to Moderate
+   LIME high-risk R² = 0.3247
+   LIME low-risk  R² = 0.3843
+   → SHAP recommended for GDPR/ECOA regulatory reporting
+
+── 5. Fairness ─────────────────────────────────────────────────
+   Male   predicted default rate : 0.1913
+   Female predicted default rate : 0.2267
+   Disparate Impact (F/M)        : 1.1853
+
+── 6. All Output Figures ────────────────────────────────────────
+   📊 01_EDA.png
+   📊 02_Correlation_Heatmap.png
+   📊 03_ROC_PR_Curves.png
+   📊 04_Confusion_Matrices.png
+   📊 05_Calibration_Curve.png
+   📊 06_SHAP_Global_Bar.png
+   📊 07_SHAP_Beeswarm.png
+   📊 08_SHAP_Dependence.png
+   📊 09_SHAP_Decision_Plot.png
+   📊 10a_SHAP_Force_HighRisk.png
+   📊 10b_SHAP_Force_LowRisk.png
+   📊 11a_LIME_HighRisk.png
+   📊 11b_LIME_LowRisk.png
+   📊 12_SHAP_vs_LIME_Comparison.png
+   📊 13_Novel_AllFeatures_SHAP.png
+   📊 14_Novel_MaxStreak.png
+   📊 15_Novel_RPE_Entropy.png
+   📊 16_Novel_PayMomentum.png
+   📊 17_Novel_CEI.png
+   📊 18_Novel_Interaction.png
+   📊 19_Novel_Summary_Card.png
+   📊 20_Fairness_Calibration_Threshold.png
+   📊 21_CrossValidation_AUC.png
+   📊 22_Threshold_KS_Optimal.png
+   📊 23_Radar_Chart_Models.png
+   📊 24_SHAP_Interaction_Heatmap.png
+   📊 25_Counterfactual_NearestNeighbour.png
+
+  Total figures saved: 27
+  Output folder      : ./output_figures/
